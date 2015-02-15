@@ -22,6 +22,7 @@ namespace HitboxQueue
 
         public void RemoveFromQueue(String user)
         {
+            user = user.Replace("@", "");
             if (queueList.Contains(user, StringComparer.CurrentCultureIgnoreCase))
                 queueList.Remove(queueList.Find(n => n.Equals(user, StringComparison.CurrentCultureIgnoreCase)));
             UserQueueNumber.Content = queueList.Count;
