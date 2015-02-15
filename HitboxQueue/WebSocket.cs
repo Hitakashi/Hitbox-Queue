@@ -83,39 +83,56 @@ namespace HitboxQueue
                         Console.WriteLine(paramsObject);
                         if (paramsObject.SelectToken("buffer") != null) return;
 
+                        String username = paramsObject.SelectToken("name").ToString();
+                        String text = paramsObject.SelectToken("text").ToString();
+                        String role = paramsObject.SelectToken("role").ToString();
+
                         hb.Dispatcher.Invoke(delegate
                         {
-                            if (paramsObject.SelectToken("text").ToString().Equals("!queue"))
+                            if (paramsObject.SelectToken("text").ToString().Equals("!clearq") &&
+                                role.Equals("admin"))
+                            {
+                                hb.Dispatcher.Invoke(
+                                          delegate { hb.ClearQueue(); });
+                            }
+
+                            if (text.Equals("!queue"))
                             {
                                 if (hb.subToggle.IsChecked == true && hb.followerToggle.IsChecked == true)
                                 {
                                     if (paramsObject.SelectToken("isSubscriber").ToObject<Boolean>() ||
                                         paramsObject.SelectToken("isFollower").ToObject<Boolean>())
                                         hb.Dispatcher.Invoke(
-                                            delegate { hb.AddToQueue(paramsObject.SelectToken("name").ToString()); });
+                                            delegate { hb.AddToQueue(username); });
                                 }
                                 else if (hb.subToggle.IsChecked == true)
                                 {
                                     // Must be sub
                                     if (paramsObject.SelectToken("isSubscriber").ToObject<Boolean>())
                                         hb.Dispatcher.Invoke(
-                                            delegate { hb.AddToQueue(paramsObject.SelectToken("name").ToString()); });
+                                            delegate { hb.AddToQueue(username); });
                                 }
                                 else if (hb.followerToggle.IsChecked == true)
                                 {
                                     if (paramsObject.SelectToken("isFollower").ToObject<Boolean>())
                                         hb.Dispatcher.Invoke(
-                                            delegate { hb.AddToQueue(paramsObject.SelectToken("name").ToString()); });
+                                            delegate { hb.AddToQueue(username); });
                                 }
                                 else
                                 {
                                     hb.Dispatcher.Invoke(
-                                        delegate { hb.AddToQueue(paramsObject.SelectToken("name").ToString()); });
+                                        delegate { hb.AddToQueue(username); });
                                 }
                             }
                         });
 
-                        if (paramsObject.SelectToken("text").ToString().Equals("!leavequeue"))
+                        if ((role.Equals("admin") || role.Equals("user")) && paramsObject.SelectToken("text").ToString().StartsWith("!leavequeue "))
+                        {
+                            string user = text.Substring(text.IndexOf(' ') + 1);
+                            hb.Dispatcher.Invoke(
+                                delegate { hb.RemoveFromQueue(user); });
+
+                        } else if (paramsObject.SelectToken("text").ToString().Equals("!leavequeue"))
                         {
                             hb.Dispatcher.Invoke(
                                 delegate { hb.RemoveFromQueue(paramsObject.SelectToken("name").ToString()); });

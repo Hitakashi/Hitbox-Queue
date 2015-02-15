@@ -15,18 +15,30 @@ namespace HitboxQueue
         {
             if (!queueList.Contains(user, StringComparer.CurrentCultureIgnoreCase))
                 queueList.Add(user);
-            GetPicture();
             UserQueueNumber.Content = queueList.Count;
-
+            
+            GetPicture();
         }
 
-        public  void RemoveFromQueue(String user)
+        public void RemoveFromQueue(String user)
         {
             if (queueList.Contains(user, StringComparer.CurrentCultureIgnoreCase))
-                queueList.Remove(user);
+                queueList.Remove(queueList.Find(n => n.Equals(user, StringComparison.CurrentCultureIgnoreCase)));
             UserQueueNumber.Content = queueList.Count;
 
+            GetPicture();
+        }
 
+        public void ClearQueue()
+        {
+            queueList.Clear();
+            UserQueueNumber.Content = queueList.Count;
+
+            GetPicture();
+        }
+
+        public void GetPicture()
+        {
             foreach (var VARIABLE in ImageGrid.Children.OfType<Image>())
             {
                 if (VARIABLE.Tag != null)
@@ -39,13 +51,6 @@ namespace HitboxQueue
                 if (VARIABLE2.Content != null)
                     VARIABLE2.Content = "";
             }
-
-            GetPicture();
-
-        }
-
-        public void GetPicture()
-        {
             
             List<String> first5 = queueList.Take(5).ToList();
             int index = 1;
